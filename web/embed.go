@@ -7,10 +7,10 @@ import (
 	"io/fs"
 	"net/http"
 	"path"
-	"strings"
 )
 
-//go:embed assets
+//go:embed frontend/dist/*
+//go:embed frontend/dist/*/**
 var EmbeddedFiles embed.FS
 
 type ServeFileSystem struct {
@@ -62,21 +62,4 @@ func (c *ServeFileSystem) Open(name string) (http.File, error) {
 		File: f,
 	}
 	return &ff, nil
-}
-
-func (c *ServeFileSystem) Exists(prefix string, filepath string) bool {
-	if p := strings.TrimPrefix(filepath, prefix); len(p) < len(filepath) {
-
-		p = path.Join(c.Path, p)
-		f, err := c.E.Open(p)
-		if err != nil {
-			return false
-		}
-		err = f.Close()
-		if err != nil {
-			return false
-		}
-		return true
-	}
-	return false
 }

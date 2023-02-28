@@ -9,11 +9,13 @@ import (
 	"github.com/gin-gonic/gin"
 	"io"
 	"log"
+	"mime"
 	"net/http"
+	"strings"
 )
 
 const (
-	IndexPage = "assets/index.html"
+	IndexPage = "frontend/dist/index.html"
 	StormPath = "storm.db"
 )
 
@@ -42,16 +44,28 @@ func NewServer() *Server {
 		db:     db,
 	}
 
+	err = mime.AddExtensionType(".js", "application/javascript")
+	if err != nil {
+		log.Printf("error when add extension type, err: %v", err)
+	}
+
 	s.router.GET("/", s.GetIndexPage)
 	s.router.POST("/handler", s.handler)
 	s.router.GET("/api/proxy", s.GetProxy)
 	s.router.DELETE("/api/proxy/:id", s.DeleteProxy)
 	assets := &web.ServeFileSystem{
 		E:    web.EmbeddedFiles,
-		Path: "assets",
+		Path: "frontend/dist/assets",
 	}
 	s.router.Use(CORS)
 	s.router.StaticFS("/assets", assets)
+
+	//if not route (route from frontend) redirect to index
+	s.router.NoRoute(func(c *gin.Context) {
+		if !strings.HasPrefix(c.Request.RequestURI, "/api") {
+			s.GetIndexPage(c)
+		}
+	})
 
 	return s
 }

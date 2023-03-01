@@ -32,13 +32,17 @@ func (s *Storm) Close() error {
 	return s.db.Close()
 }
 
+func getNowUnixTime() int64 {
+	return time.Now().Unix() * 1000
+}
+
 func (s *Storm) CreateProxy(name string, port int) (*Proxy, error) {
 
 	r := &Proxy{
 		Name:         name,
 		Port:         port,
-		CreatedAt:    time.Now().Unix(),
-		LastUpdateAt: time.Now().Unix(),
+		CreatedAt:    getNowUnixTime(),
+		LastUpdateAt: getNowUnixTime(),
 		Status:       true,
 	}
 
@@ -56,7 +60,7 @@ func (s *Storm) UpdateProxy(name string, status bool) error {
 		return err
 	}
 
-	r.LastUpdateAt = time.Now().Unix()
+	r.LastUpdateAt = getNowUnixTime()
 	r.Status = status
 
 	if err := s.db.Save(r); err != nil {

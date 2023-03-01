@@ -9,8 +9,8 @@ import (
 	"path"
 )
 
-//go:embed frontend/dist/*
-//go:embed frontend/dist/*/**
+//go:embed public/*
+//go:embed public/*/**
 var EmbeddedFiles embed.FS
 
 type ServeFileSystem struct {

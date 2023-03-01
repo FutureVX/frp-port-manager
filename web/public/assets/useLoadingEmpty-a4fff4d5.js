@@ -1,0 +1,1 @@
+import{x as o}from"./index-849e8c5d.js";function u(e=!1,t=!1){const{bool:s,setTrue:a,setFalse:n}=o(e),{bool:l,setBool:r}=o(t);return{loading:s,startLoading:a,endLoading:n,empty:l,setEmpty:r}}export{u};

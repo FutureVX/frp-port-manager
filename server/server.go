@@ -15,7 +15,7 @@ import (
 )
 
 const (
-	IndexPage = "frontend/dist/index.html"
+	IndexPage = "public/index.html"
 	StormPath = "storm.db"
 )
 
@@ -55,7 +55,7 @@ func NewServer() *Server {
 	s.router.DELETE("/api/proxy/:id", s.DeleteProxy)
 	assets := &web.ServeFileSystem{
 		E:    web.EmbeddedFiles,
-		Path: "frontend/dist/assets",
+		Path: "public/assets",
 	}
 	s.router.Use(CORS)
 	s.router.StaticFS("/assets", assets)
@@ -87,7 +87,8 @@ func (s *Server) handlerNewProxy(req *types.Request) types.Response {
 	remotePort := req.Content["remote_port"].(float64)
 
 	proxy, err := s.db.GetProxyByPort(int(remotePort))
-	if proxy != nil {
+	// if port has used and name != request name, reject
+	if proxy != nil && proxy.Name != proxyName {
 		return types.Response{
 			Reject:       true,
 			RejectReason: "port is used",
@@ -96,6 +97,7 @@ func (s *Server) handlerNewProxy(req *types.Request) types.Response {
 		}
 	}
 
+	// else create new proxy
 	_, err = s.db.CreateProxy(proxyName, int(remotePort))
 	if err != nil {
 		log.Printf("error when update proxy name %s, err: %v", proxyName, err)

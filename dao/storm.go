@@ -33,21 +33,13 @@ func (s *Storm) Close() error {
 }
 
 func (s *Storm) CreateProxy(name string, port int) (*Proxy, error) {
-	r := &Proxy{}
 
-	err := s.db.One("Name", name, r)
-
-	if err != nil {
-		r = &Proxy{
-			Name:         name,
-			Port:         port,
-			CreatedAt:    time.Now().Unix(),
-			LastUpdateAt: time.Now().Unix(),
-			Status:       true,
-		}
-	} else {
-		r.Port = port
-		r.Status = true
+	r := &Proxy{
+		Name:         name,
+		Port:         port,
+		CreatedAt:    time.Now().Unix(),
+		LastUpdateAt: time.Now().Unix(),
+		Status:       true,
 	}
 
 	if err := s.db.Save(r); err != nil {

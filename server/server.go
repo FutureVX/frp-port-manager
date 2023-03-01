@@ -40,7 +40,7 @@ func NewServer() *Server {
 	gin.SetMode(gin.ReleaseMode)
 
 	s := &Server{
-		router: gin.Default(),
+		router: gin.New(),
 		db:     db,
 	}
 
@@ -57,8 +57,8 @@ func NewServer() *Server {
 		E:    web.EmbeddedFiles,
 		Path: "public/assets",
 	}
-	s.router.Use(CORS)
 	s.router.StaticFS("/assets", assets)
+	s.router.Use(CORS, gin.Logger(), gin.Recovery())
 
 	//if not route (route from frontend) redirect to index
 	s.router.NoRoute(func(c *gin.Context) {

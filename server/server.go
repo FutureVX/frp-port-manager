@@ -97,8 +97,17 @@ func (s *Server) handlerNewProxy(req *types.Request) types.Response {
 		}
 	}
 
-	// else create new proxy
-	_, err = s.db.CreateProxy(proxyName, int(remotePort))
+	if proxy == nil {
+		// else create new proxy
+		_, err = s.db.CreateProxy(proxyName, int(remotePort))
+		if err != nil {
+			log.Printf("error when create proxy name %s, err: %v", proxyName, err)
+		}
+
+		return ignoreResponse
+	}
+
+	err = s.db.UpdateProxy(proxyName, true)
 	if err != nil {
 		log.Printf("error when update proxy name %s, err: %v", proxyName, err)
 	}
